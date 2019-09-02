@@ -72,3 +72,7 @@ GitHub](https://github.com/greenbone/gvmd/issues) first.
 Copyright (C) 2009-2018 [Greenbone Networks GmbH](https://www.greenbone.net/)
 
 Licensed under the [GNU General Public License v2.0 or later](COPYING).
+
+#gvmd-8.0.1
+#与官网版本一致
+#用于自己研究gvmd的代码，修改代码便于版本控制
