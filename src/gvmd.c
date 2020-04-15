@@ -2010,7 +2010,8 @@ main (int argc, char **argv)
   if (manager_address_string_unix == NULL)
     {
       if (manager_address_string || manager_address_string_2)
-        use_tls = 1;
+        //use_tls = 1;
+        use_tls = 0;
       else
         {
           use_tls = 0;
@@ -2028,14 +2029,14 @@ main (int argc, char **argv)
           return EXIT_FAILURE;
         }
     }
-
+#if 0
   if (use_tls == 0 && (manager_port_string || manager_port_string_2))
     {
       g_critical ("%s: --port or --port2 given when listening on UNIX socket",
                   __FUNCTION__);
       return EXIT_FAILURE;
     }
-
+#endif
   /* Set process title. */
 
   proctitle_init (argc, argv);
@@ -2712,11 +2713,11 @@ main (int argc, char **argv)
   if (disable_encrypted_credentials)
     g_message ("Encryption of credentials has been disabled.");
 
-  if (manager_listen (use_tls ? NULL : manager_address_string_unix,
-                      use_tls ? (manager_address_string
+  if (manager_listen ( manager_address_string_unix,
+                      (manager_address_string
                                    ? manager_address_string
                                    : (ipv6_is_enabled () ? "::" : "0.0.0.0"))
-                              : NULL,
+                              ,
                       manager_port_string,
                       listen_owner,
                       listen_group,
