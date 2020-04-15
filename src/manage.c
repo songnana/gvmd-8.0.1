@@ -4699,6 +4699,7 @@ set_certs (const char *ca_pub, const char *key_pub, const char *key_priv)
 static int
 scanner_setup (scanner_t scanner)
 {
+  g_debug("	  %s start", __FUNCTION__);
   int ret, port;
   char *host, *ca_pub, *key_pub, *key_priv;
 
@@ -4751,6 +4752,7 @@ run_task_setup (task_t task,
                 credential_t *esxi_credential,
                 credential_t *snmp_credential)
 {
+  g_debug("	  %s start", __FUNCTION__);
   int ret;
 
   *config = task_config (task);
@@ -5129,6 +5131,7 @@ run_gmp_task (task_t task, scanner_t scanner, int from, char **report_id)
 static int
 run_otp_task (task_t task, scanner_t scanner, int from, char **report_id)
 {
+  g_debug("	  %s start", __FUNCTION__);
   char title[128], *hosts, *port_range, *port, *uuid;
   gchar *plugins;
   int fail, pid, ret;
@@ -5748,6 +5751,7 @@ run_otp_task (task_t task, scanner_t scanner, int from, char **report_id)
 static int
 run_task (const char *task_id, char **report_id, int from)
 {
+  g_debug("	  %s start", __FUNCTION__);
   task_t task;
   scanner_t scanner;
   int ret;
@@ -5812,6 +5816,7 @@ run_task (const char *task_id, char **report_id, int from)
 int
 start_task (const char *task_id, char **report_id)
 {
+  g_debug("	  %s start", __FUNCTION__);
   if (acl_user_may ("start_task") == 0)
     return 99;
 

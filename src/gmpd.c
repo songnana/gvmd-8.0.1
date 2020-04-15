@@ -307,6 +307,7 @@ write_to_client_tls (gnutls_session_t *client_session)
                      gnutls_strerror ((int) count));
           return -1;
         }
+	  g_debug ("=> client %.*s", (int)count, to_client + to_client_start);
       to_client_start += count;
       g_debug ("=> client  %u bytes", (unsigned int) count);
     }
@@ -346,6 +347,7 @@ write_to_client_unix (int client_socket)
                      strerror (errno));
           return -1;
         }
+	  g_debug ("=> client %.*s", (int)count, to_client + to_client_start);
       to_client_start += count;
       g_debug ("=> client  %u bytes", (unsigned int) count);
     }
@@ -484,6 +486,7 @@ serve_gmp (gvm_connection_t *client_connection,
            const gchar *database,
            gchar **disable)
 {
+  g_debug("	  %s start", __FUNCTION__);
   int nfds, scan_handler = 0, rc = 0;
   /* True if processing of the client input is waiting for space in the
    * to_scanner or to_client buffer. */
@@ -561,6 +564,7 @@ serve_gmp (gvm_connection_t *client_connection,
   nfds = openvas_scanner_get_nfds (client_connection->socket);
   while (1)
     {
+      g_debug ("	%s:%d in while", __FUNCTION__, getpid());
       int ret;
       fd_set readfds, writefds;
       int termination_signal = get_termination_signal ();
@@ -721,14 +725,22 @@ serve_gmp (gvm_connection_t *client_connection,
               if (g_strstr_len (from_client + initial_start,
                                 from_client_end - initial_start,
                                 "<password>"))
-                g_debug ("<= client  Input may contain password, suppressed");
-              else
-                g_debug ("<= client  \"%.*s\"",
+                {
+                  g_debug ("<= client  Input may contain password, suppressed");
+				  g_debug ("<= client  \"%.*s\"",
                          from_client_end - initial_start,
                          from_client + initial_start);
+                }
+              else
+              	{
+                  g_debug ("<= client  \"%.*s\"",
+                         from_client_end - initial_start,
+                         from_client + initial_start);
+              	}
             }
 
           ret = process_gmp_client_input ();
+          g_debug("   %s, ret of process_gmp_client_input:%d", __FUNCTION__, ret);
           if (ret == 0)
             /* Processed all input. */
             client_input_stalled = 0;
@@ -809,25 +821,37 @@ serve_gmp (gvm_connection_t *client_connection,
           switch (openvas_scanner_read ())
             {
             case 0: /* Read everything. */
-              break;
+              {
+                g_debug("   %s   , ret of openvas_scanner_read: 0", __FUNCTION__);
+                break;
+              }
             case -1: /* Error. */
+              {
               /* This may be because the scanner closed the connection
                * at the end of a command. */
               /** @todo Then should get EOF (-3). */
-              set_scanner_init_state (SCANNER_INIT_TOP);
-              rc = -1;
-              goto client_free;
+                g_debug(" %s	 , ret of write_to_server_buffer: -1", __FUNCTION__);
+                set_scanner_init_state (SCANNER_INIT_TOP);
+                rc = -1;
+                goto client_free;
+              }
             case -2: /* from_scanner buffer full. */
-              /* There may be more to read. */
-              break;
+              {
+                /* There may be more to read. */
+                g_debug(" %s	 , ret of write_to_server_buffer: -2", __FUNCTION__);
+                break;
+              }
             case -3: /* End of file. */
-              set_scanner_init_state (SCANNER_INIT_TOP);
-              if (client_active == 0)
-                /* The client has closed the connection, so exit. */
-                return 0;
-              /* Scanner went down, exit. */
-              rc = -1;
-              goto client_free;
+              {
+                g_debug(" %s   , ret of write_to_server_buffer: 0", __FUNCTION__);
+                set_scanner_init_state (SCANNER_INIT_TOP);
+                if (client_active == 0)
+                  /* The client has closed the connection, so exit. */
+                  return 0;
+                /* Scanner went down, exit. */
+                rc = -1;
+                goto client_free;
+              }
             default: /* Programming error. */
               assert (0);
             }

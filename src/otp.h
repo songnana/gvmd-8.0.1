@@ -50,7 +50,7 @@ typedef enum
   SCANNER_INIT_SENT_COMPLETE_LIST,
   SCANNER_INIT_SENT_COMPLETE_LIST_UPDATE,
   SCANNER_INIT_SENT_VERSION,
-  SCANNER_INIT_TOP
+  SCANNER_INIT_TOP //9
 } scanner_init_state_t;
 
 /** @todo Exported for gmpd.c. */

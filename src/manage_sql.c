@@ -15385,6 +15385,7 @@ task_average_scan_duration (task_t task)
 void
 init_manage_process (int update_nvt_cache, const gchar *database)
 {
+  g_debug("	  %s start,pid:%d", __FUNCTION__, getpid());
   lockfile_t lockfile;
 
   if (sql_is_open ())
@@ -15432,6 +15433,7 @@ init_manage_process (int update_nvt_cache, const gchar *database)
 void
 reinit_manage_process ()
 {
+  g_debug("   %s start", __FUNCTION__);
   cleanup_manage_process (FALSE);
   init_manage_process (0, gvmd_db_name);
 }
@@ -19511,6 +19513,7 @@ set_task_run_status (task_t task, task_status_t status)
 int
 set_task_requested (task_t task, task_status_t *status)
 {
+  g_debug("   %s start", __FUNCTION__);
   task_status_t run_status;
   char *uuid, *name;
 

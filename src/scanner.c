@@ -264,6 +264,7 @@ write_to_server_buffer ()
 int
 openvas_scanner_read ()
 {
+  g_debug("	  %s start", __FUNCTION__);
   if (openvas_scanner_socket == -1)
     return -1;
 
@@ -330,8 +331,14 @@ openvas_scanner_read ()
         /* End of file. */
         return -3;
       assert (count > 0);
+  
+      g_debug ("s< server  (string) %.*s", (int) count, from_scanner + from_scanner_end);
       from_scanner_end += count;
+      g_debug ("<= server  (string) %zi bytes", count);
+ 
     }
+
+  g_debug ("<= server  (string) done");
 
   /* Buffer full. */
   return -2;
@@ -375,6 +382,7 @@ openvas_scanner_realloc ()
 int
 openvas_scanner_write (int nvt_cache_mode)
 {
+  g_debug("	%s   start, scanner init state: %d", __FUNCTION__, scanner_init_state);
   if (openvas_scanner_socket == -1)
     return -1;
   switch (scanner_init_state)
@@ -477,13 +485,25 @@ openvas_scanner_write (int nvt_cache_mode)
         switch (write_to_server_buffer ())
           {
           case 0:
-            return 0;
+            {
+              g_debug(" %s	 , ret of write_to_server_buffer: 0", __FUNCTION__);
+              return 0;
+            }
           case -1:
-            return -1;
+          	{
+              g_debug(" %s	 , ret of write_to_server_buffer: -1", __FUNCTION__);
+              return -1;
+          	}
           case -2:
-            return -2;
+          	{
+              g_debug(" %s	 , ret of write_to_server_buffer: -2", __FUNCTION__);
+              return -2;
+          	}
           case -3:
-            continue; /* Interrupted. */
+          	{
+              g_debug(" %s	 , ret of write_to_server_buffer: -3", __FUNCTION__);
+              continue; /* Interrupted. */
+          	}
           }
     }
   return -3;
@@ -713,6 +733,7 @@ openvas_scanner_connect ()
 void
 openvas_scanner_free ()
 {
+  g_debug("	  %s start", __FUNCTION__);
   close (openvas_scanner_socket);
   openvas_scanner_socket = -1;
   if (openvas_scanner_session)
@@ -887,6 +908,7 @@ openvas_scanner_set_address (const char *addr, int port)
 int
 openvas_scanner_set_unix (const char *path)
 {
+  g_debug("	  %s start", __FUNCTION__);
   if (!path)
     return -1;
 
@@ -931,6 +953,7 @@ openvas_scanner_set_certs (const char *ca_pub,
 int
 openvas_scanner_is_loading ()
 {
+  g_debug("   %s start", __FUNCTION__);
   int attempts = 5;
   int ret = 0;
   while (attempts >= 0)

@@ -5261,7 +5261,7 @@ typedef enum
   CLIENT_GET_TASKS,
   CLIENT_GET_TICKETS,
   CLIENT_GET_USERS,
-  CLIENT_GET_VERSION,
+  CLIENT_GET_VERSION, //405
   CLIENT_GET_VERSION_AUTHENTIC,
   CLIENT_GET_VULNS,
   CLIENT_HELP,
@@ -5470,7 +5470,7 @@ typedef enum
   CLIENT_RUN_WIZARD_PARAMS_PARAM,
   CLIENT_RUN_WIZARD_PARAMS_PARAM_NAME,
   CLIENT_RUN_WIZARD_PARAMS_PARAM_VALUE,
-  CLIENT_START_TASK,
+  CLIENT_START_TASK,//614
   CLIENT_STOP_TASK,
   CLIENT_SYNC_CONFIG,
   CLIENT_TEST_ALERT,
@@ -5626,6 +5626,7 @@ gmp_xml_handle_start_element (/* unused */ GMarkupParseContext* context,
                               gpointer user_data,
                               GError **error)
 {
+  g_debug(" %s start", __FUNCTION__);
   gmp_parser_t *gmp_parser = (gmp_parser_t*) user_data;
   int (*write_to_client) (const char *, void*)
     = (int (*) (const char *, void*)) gmp_parser->client_writer;
@@ -19651,6 +19652,7 @@ handle_get_users (gmp_parser_t *gmp_parser, GError **error)
 static void
 handle_get_version (gmp_parser_t *gmp_parser, GError **error)
 {
+  g_debug("   %s start", __FUNCTION__);
   SEND_TO_CLIENT_OR_FAIL ("<get_version_response"
                           " status=\"" STATUS_OK "\""
                           " status_text=\"" STATUS_OK_TEXT "\">"
@@ -20328,12 +20330,15 @@ gmp_xml_handle_end_element (/* unused */ GMarkupParseContext* context,
                             gpointer user_data,
                             GError **error)
 {
+  g_debug("   %s start", __FUNCTION__);
   gmp_parser_t *gmp_parser = (gmp_parser_t*) user_data;
   int (*write_to_client) (const char *, void*)
     = (int (*) (const char *, void*)) gmp_parser->client_writer;
   void* write_to_client_data = (void*) gmp_parser->client_writer_data;
 
   g_debug ("   XML    end: %s", element_name);
+  g_debug ("   gmp_parse->read_over: %d, gmp_parser->parent_state: %d", 
+    gmp_parser->read_over, gmp_parser->parent_state);
 
   if (gmp_parser->read_over > 1)
     {
@@ -29019,6 +29024,7 @@ gmp_xml_handle_text (/* unused */ GMarkupParseContext* context,
                      /* unused */ gpointer user_data,
                      /* unused */ GError **error)
 {
+  g_debug(" %s start", __FUNCTION__);
   if (text_len == 0) return;
   g_debug ("   XML   text: %s", text);
   switch (client_state)
@@ -30272,6 +30278,7 @@ init_gmp_process (int update_nvt_cache, const gchar *database,
 int
 process_gmp_client_input ()
 {
+  g_debug("   %s start", __FUNCTION__);
   gboolean success;
   GError* error = NULL;
 
@@ -30289,6 +30296,8 @@ process_gmp_client_input ()
                                           from_client + from_client_start,
                                           from_client_end - from_client_start,
                                           &error);
+  
+  g_debug("   g_markup_parse_context_parse complete, success:%d", success);
   if (success == FALSE)
     {
       int err;

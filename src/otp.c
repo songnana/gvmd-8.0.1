@@ -363,7 +363,7 @@ typedef enum
   SCANNER_LOG_HOSTNAME,
   SCANNER_LOG_NUMBER,
   SCANNER_LOG_OID,
-  SCANNER_NVT_INFO,
+  SCANNER_NVT_INFO, //17
   SCANNER_PLUGIN_LIST_BUGTRAQ_ID,
   SCANNER_PLUGIN_LIST_CATEGORY,
   SCANNER_PLUGIN_LIST_CVE_ID,
@@ -374,18 +374,18 @@ typedef enum
   SCANNER_PLUGIN_LIST_XREFS,
   SCANNER_PREFERENCE_NAME,
   SCANNER_PREFERENCE_VALUE,
-  SCANNER_SERVER,
+  SCANNER_SERVER, //28
   SCANNER_STATUS,
   SCANNER_STATUS_HOST,
   SCANNER_STATUS_PROGRESS,
-  SCANNER_TIME,
+  SCANNER_TIME, //32
   SCANNER_TIME_HOST_START_HOST,
   SCANNER_TIME_HOST_START_TIME,
   SCANNER_TIME_HOST_END_HOST,
   SCANNER_TIME_HOST_END_TIME,
   SCANNER_TIME_SCAN_START,
   SCANNER_TIME_SCAN_END,
-  SCANNER_TOP
+  SCANNER_TOP //39
 } scanner_state_t;
 
 /**
@@ -540,6 +540,7 @@ parse_scanner_done (char **messages)
 static int
 parse_scanner_bad_login (char **messages)
 {
+  g_debug(" %s   start", __FUNCTION__);
   char *end, *match;
   end = *messages + from_scanner_end - from_scanner_start;
   while (*messages < end && ((*messages)[0] == ' '))
@@ -676,6 +677,7 @@ parse_scanner_plugin_list_tags (char **messages)
 static int
 parse_scanner_server (char **messages)
 {
+  g_debug("	  %s start, *messages(%s)", __FUNCTION__, *messages);
   char *end, *match;
   end = *messages + from_scanner_end - from_scanner_start;
   while (*messages < end && ((*messages)[0] == ' '))
@@ -797,14 +799,15 @@ parse_scanner_loading (char *messages)
 int
 process_otp_scanner_input ()
 {
+  g_debug("	  %s start", __FUNCTION__);
   char *match = NULL;
   char *messages = from_scanner + from_scanner_start;
   char *input;
   const char *ver_str = "< OTP/2.0 >\n";
   size_t ver_len = strlen (ver_str);
   buffer_size_t from_start, from_end;
-  // g_debug ("   consider %.*s\n", from_scanner_end - from_scanner_start,
-  // messages);
+   g_debug ("   consider from openvas (%.*s)\n", from_scanner_end - from_scanner_start,
+     messages);
 
   /* Before processing the input, check if another manager process has stopped
    * the current task.  If so, send the stop request to the scanner.  This is
@@ -956,7 +959,7 @@ process_otp_scanner_input ()
     && ((match = memchr (input, (int) '<', from_end - from_start)) != NULL))
     {
       assert (match >= input);
-
+      g_debug("   %s while,from_start:(%s),from_end:(%s)", __FUNCTION__, from_scanner+from_start, from_scanner+from_end);
       /* Check whether we've had a transaction open too long, because
        * it may take some time until we get out of this loop and do a
        * process_gmp_change, and we don't want to hold up other writer

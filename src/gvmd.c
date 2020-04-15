@@ -449,6 +449,7 @@ serve_client (int server_socket, gvm_connection_t *client_connection)
   pthread_t watch_thread;
   connection_watcher_data_t *watcher_data;
 
+  g_debug("   %s start", __FUNCTION__);
   if (server_socket > 0)
     {
       int optval;
@@ -554,6 +555,7 @@ accept_and_maybe_fork (int server_socket, sigset_t *sigmask_current)
   struct sockaddr_storage addr;
   socklen_t addrlen = sizeof (addr);
 
+  g_debug("   %s start", __FUNCTION__);
   while ((client_socket =
             accept (server_socket, (struct sockaddr *) &addr, &addrlen))
          == -1)
@@ -1298,6 +1300,7 @@ fork_update_nvt_cache ()
 static void
 serve_and_schedule ()
 {
+  g_debug ("   %s start", __FUNCTION__);
   time_t last_schedule_time, last_sync_time;
   sigset_t sigmask_all;
   static sigset_t sigmask_current;
@@ -1344,7 +1347,7 @@ serve_and_schedule ()
           pthread_sigmask (SIG_SETMASK, sigmask_normal, NULL);
           raise (termination_signal);
         }
-
+#if 0
       if ((time (NULL) - last_schedule_time) >= SCHEDULE_PERIOD)
         switch (manage_schedule (
           fork_connection_for_scheduler, scheduling_enabled, sigmask_normal))
@@ -1365,7 +1368,7 @@ serve_and_schedule ()
           manage_sync (sigmask_normal, fork_update_nvt_cache);
           last_sync_time = time (NULL);
         }
-
+#endif
       timeout.tv_sec = SCHEDULE_PERIOD;
       timeout.tv_nsec = 0;
       ret =
@@ -1399,7 +1402,7 @@ serve_and_schedule ()
           if ((manager_socket_2 > -1) && FD_ISSET (manager_socket_2, &readfds))
             accept_and_maybe_fork (manager_socket_2, sigmask_normal);
         }
-
+#if 0
       if ((time (NULL) - last_schedule_time) >= SCHEDULE_PERIOD)
         switch (manage_schedule (
           fork_connection_for_scheduler, scheduling_enabled, sigmask_normal))
@@ -1421,7 +1424,7 @@ serve_and_schedule ()
           manage_sync (sigmask_normal, fork_update_nvt_cache);
           last_sync_time = time (NULL);
         }
-
+#endif
       if (termination_signal)
         {
           g_debug ("Received %s signal", sys_siglist[termination_signal]);
